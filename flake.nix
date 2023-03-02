@@ -15,7 +15,7 @@
     flake-utils.lib.eachDefaultSystem (system:
     let
       goVersion = 19;
-      overlays = [ (self: super: { go = super."go_1_${toString goVersion}"; }) ];
+      overlays = [ (self: import ./overlays { inherit goVersion; }) ];
       pkgs = import nixpkgs { inherit overlays system; };
     in
     {
