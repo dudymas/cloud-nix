@@ -22,24 +22,30 @@ stdenv.mkDerivation rec {
     rev = version;
   };
 
+  geodesix = ./..;
+
+  packages = [];
+
   # Our source is right where the unzip happens, not in a "src/" directory (default)
   sourceRoot = ".";
 
   installPhase = ''
-    mkdir -p $out/etc
+    mkdir -p $out/etc/profile.d
     mkdir -p $out/usr/local/bin
     mkdir -p $out/bin
     cp -r $src/rootfs/* $out
     cp -r $src/os/${geodesic_distro}/rootfs/* $out
-    cat <<EOF > $out/bin/${shell_name}
-    #!/bin/bash --norc
-    exec bash --init-file /etc/profile
-    EOF
-    chmod +x $out/bin/${shell_name}
+    cp -r $geodesix/profile.d $out/etc
+    rm $out/etc/profile.d/syslog-ng.sh
     for f in $( find $out -type f ); do
       substituteInPlace $f \
         --replace /usr/local/bin $out/usr/local/bin \
-        --replace /etc/ $out/etc/
+        --replace /etc/ $out/etc/ \
+        --replace /localhost '$GEODESIC_LOCALHOST'
     done
+    for b in $( find $out/usr/local/bin -type f ); do
+      ln -s $b $out/bin/$( basename $b )
+    done
+
   '';
 }

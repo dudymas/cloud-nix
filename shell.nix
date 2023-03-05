@@ -14,9 +14,12 @@ pkgs.mkShell {
     terraform
     geodesic
   ];
+
+  bash = pkgs.bashInteractive;
+  geodesic = pkgs.geodesic;
+
   shellHook = ''
-    export GEODESIC_WORKDIR=$PWD
-    export GEODESIC_HOST_CWD=$PWD
-    export ATMOS_BASE_PATH=$PWD
+    export GEODESIC_SHELL='$bash/bin/bash --init-file $geodesic/etc/profile'
+    alias geodesic=$GEODESIC_SHELL
   '';
 }
