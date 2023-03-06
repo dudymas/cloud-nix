@@ -8,7 +8,7 @@ a Docker-based shell for working with AWS and Kubernetes.
 Geodesic at its heart intends to be a workspace for maintaining infra.
 Nix at its heart intends to be a toolkit for building software and dev environments.
 
-Together, they bring a workspace that is consistent, reproducible, and fast.
+Together, they bring a workspace that is isolated, reproducible, and fast.
 
 # How?
 
