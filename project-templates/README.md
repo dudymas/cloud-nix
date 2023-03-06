@@ -1,6 +1,10 @@
 # Wat
 
-A simple Nix shell for working with cruft/cookiecutter.
+A simple Nix shell for working with [cruft](https://github.com/cruft/cruft) and
+[cookiecutter](https://github.com/cookiecutter/cookiecutter).
+
+Other basic tools like `make` are also included since some repos I work with
+require them.
 
 # Why
 
