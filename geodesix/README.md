@@ -31,6 +31,8 @@ nix flake init --template github:dudymas/cloud-nix#geodesix
 chmod +x geodesix.sh
 ```
 
+Next, edit the `.envrc` and set your GEODESIC_NAMESPACE to the atmos namespace you want.
+
 Once your Nix shell is up and running with direnv, you can enter the geodesix shell with:
 
 ```bash
@@ -47,10 +49,17 @@ nix develop github:dudymas/cloud-nix#geodesix
 Since this method does not add any files or scripts, you'll need to manually enter
 the geodesix shell with:
 ```bash
+export GEODESIC_NAMESPACE=__your_namespace__
 $bash/bin/bash --init-file $geodesic/etc/profile
 ```
 
-# How come you want to call it with env vars?
+## How come you want to call it with env vars?
 
 I don't like having too much magic in how my shells launch.
 It's up to you to alias the command or create a wrapper function/script.
+
+# TODO:
+- Describe how to overlay your own profile and scripts.
+- Describe how to overlay custom app versions and builds.
+- Support using nix containers.
+- Add commands in addition to the shell for quicker drop-in/drop-out use.
