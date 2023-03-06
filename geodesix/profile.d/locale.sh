@@ -1,5 +1,6 @@
-#!/bin/bash -e
+# shellcheck shell=bash
 
+# ============
 # Locale tests
 # ============
 

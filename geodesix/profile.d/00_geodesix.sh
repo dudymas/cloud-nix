@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # takes precedence in geodesic to set up the environment
 export GEODESIC_LOCALHOST=$HOME
 export GEODESIC_WORKDIR=$PWD
