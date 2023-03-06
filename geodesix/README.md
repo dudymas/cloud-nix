@@ -50,13 +50,8 @@ Since this method does not add any files or scripts, you'll need to manually ent
 the geodesix shell with:
 ```bash
 export GEODESIC_NAMESPACE=__your_namespace__
-$bash/bin/bash --init-file $geodesic/etc/profile
+geodesix
 ```
-
-## How come you want to call it with env vars?
-
-I don't like having too much magic in how my shells launch.
-It's up to you to alias the command or create a wrapper function/script.
 
 # Customizing
 
