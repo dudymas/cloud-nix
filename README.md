@@ -16,6 +16,6 @@ TODO:
 
 # How?
 
-- [Geodesix README.md](./geodesix/README.md)
-- [Project-Templates README.md](./project-templates/README.md)
-- [Nix-templates README.md](./nix-templates/README.md)
+- [Geodesix README.md](./geodesix)
+- [Project-Templates README.md](./project-templates)
+- [Nix-templates README.md](./nix-templates)
