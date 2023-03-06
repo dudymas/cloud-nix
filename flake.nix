@@ -48,6 +48,10 @@
           path = ./nix-templates/geodesix;
           description = "Geodesix template for adding nix to your infra repo";
         };
+        geodesix = {
+          path = ./nix-templates/geodesix;
+          description = "Geodesix template for adding nix to your infra repo";
+        };
       };
     };
 }

@@ -24,28 +24,37 @@ stdenv.mkDerivation rec {
 
   geodesix = ./..;
 
-  packages = [];
-
   # Our source is right where the unzip happens, not in a "src/" directory (default)
   sourceRoot = ".";
 
   installPhase = ''
+    # init
     mkdir -p $out/etc/profile.d
+    touch $out/etc/profile.d/locale.sh
     mkdir -p $out/usr/local/bin
     mkdir -p $out/bin
+
+    # copy geodesic source
     cp -r $src/rootfs/* $out
     cp -r $src/os/${geodesic_distro}/rootfs/* $out
-    cp -r $geodesix/profile.d $out/etc
+
+    # clean up any unnecessary files
     rm $out/etc/profile.d/syslog-ng.sh
+
+    # nixify the geodesic shell
     for f in $( find $out -type f ); do
       substituteInPlace $f \
         --replace /usr/local/bin $out/usr/local/bin \
         --replace /etc/ $out/etc/ \
         --replace /localhost '$GEODESIC_LOCALHOST'
     done
+
+    # link binaries to /bin
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
 
+    # patch the geodesic shell profile scripts
+    cp -r $geodesix/profile.d $out/etc
   '';
 }

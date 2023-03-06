@@ -18,3 +18,4 @@ TODO:
 
 - [Geodesix README.md](./geodesix/README.md)
 - [Project-Templates README.md](./project-templates/README.md)
+- [Nix-templates README.md](./nix-templates/README.md)
