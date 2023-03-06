@@ -30,7 +30,6 @@ stdenv.mkDerivation rec {
   installPhase = ''
     # init
     mkdir -p $out/etc/profile.d
-    touch $out/etc/profile.d/locale.sh
     mkdir -p $out/usr/local/bin
     mkdir -p $out/bin
 
