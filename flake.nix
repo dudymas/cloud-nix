@@ -45,7 +45,7 @@
     }) // {
       templates = {
         default = {
-          path = ./templates/geodesix;
+          path = ./nix-templates/geodesix;
           description = "Geodesix template for adding nix to your infra repo";
         };
       };
