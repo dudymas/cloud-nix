@@ -58,6 +58,11 @@ $bash/bin/bash --init-file $geodesic/etc/profile
 I don't like having too much magic in how my shells launch.
 It's up to you to alias the command or create a wrapper function/script.
 
+# Customizing
+
+Most [geodesix env vars](profile.d/00_geodesix.sh) can be overridden
+and you'll want to observe any defaults that don't make sense in your environment.
+
 # TODO:
 - Describe how to overlay your own profile and scripts.
 - Describe how to overlay custom app versions and builds.
