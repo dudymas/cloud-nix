@@ -1,6 +1,8 @@
 { shell_name ? "geodesic"
 , geodesic_distro ? "debian"
 , version ? "1.8.0"
+, owner ? "cloudposse"
+, repo ? "geodesic"
 
 , lib
 , fetchurl
@@ -16,9 +18,7 @@ stdenv.mkDerivation rec {
   inherit version;
 
   src = pkgs.fetchFromGitHub {
-    inherit sha256;
-    owner = "cloudposse";
-    repo = "geodesic";
+    inherit sha256 owner repo;
     rev = version;
   };
 
