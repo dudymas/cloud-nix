@@ -9,8 +9,14 @@ let
   };
 in
 pkgs.mkShell {
-  packages = with pkgs; [ jq yq-go project-templates-python machNix shellcheck virtualenv ] ++
-    (with pkgs.python310Packages; [ pip pre-commit pytest ]);
+  packages = with pkgs; [
+    cookiecutter
+    jq
+    machNix
+    shellcheck
+    virtualenv
+    yq-go
+    ] ++ (with pkgs.python310Packages; [ pip pre-commit pytest ]);
   shellHook = ''
     ${pkgs.python}/bin/python --version
   '';

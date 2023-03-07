@@ -16,6 +16,9 @@ stdenv.mkDerivation rec {
   pname = "geodesic";
   url = "github:cloudposse/geodesic?ref=${version}";
   inherit version;
+  meta = {
+    mainProgram = "geodesic";
+  };
 
   src = pkgs.fetchFromGitHub {
     inherit sha256 owner repo;
@@ -55,5 +58,12 @@ stdenv.mkDerivation rec {
 
     # patch the geodesic shell profile scripts
     cp -r $geodesix/profile.d $out/etc
+
+    # generate geodesic shell
+    cat > $out/bin/geodesic <<EOF
+    #!/usr/bin/env bash
+    exec ${bash}/bin/bash --init-file $out/etc/profile $@
+    EOF
+    chmod +x $out/bin/geodesic
   '';
 }

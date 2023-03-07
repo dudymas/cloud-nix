@@ -7,8 +7,6 @@
 
     # project-templates
     mach-nix.url = "github:/DavHau/mach-nix?ref=3.5.0";
-
-    # geodesix
   };
 
   outputs =
@@ -27,6 +25,7 @@
       ];
 
       pkgs = import nixpkgs { inherit overlays system; };
+      geodesix = import ./geodesix { inherit system nixpkgs; };
 
     in
     {
@@ -37,10 +36,13 @@
         project-templates = import ./project-templates {
           inherit mach-nix pkgs system;
         };
-        geodesix = import ./geodesix { inherit nixpkgs system; };
+        geodesix = geodesix.shell;
       };
 
-      apps = { };
+      apps = {
+        default = geodesix.app;
+        geodesix = geodesix.app;
+      };
 
     }) // {
       templates = {
