@@ -12,6 +12,11 @@
 }:
 stdenv.mkDerivation rec {
   bash = pkgs.bashInteractive;
+  direnv = pkgs.direnv;
+  aws = pkgs.awscli2;
+
+  atmos = import ./atmos.nix { inherit pkgs; };
+  terraform = import ./terraform.nix { inherit pkgs; };
 
   pname = "geodesic";
   url = "github:cloudposse/geodesic?ref=${version}";
@@ -36,7 +41,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/usr/local/bin
     mkdir -p $out/bin
 
-    # copy geodesic source
+    # copy geodesic source and deps
     cp -r $src/rootfs/* $out
     cp -r $src/os/${geodesic_distro}/rootfs/* $out
 
@@ -55,14 +60,18 @@ stdenv.mkDerivation rec {
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
+    for d in $aws $bash $atmos $terraform $direnv ;
+      do cp -r $d/bin $out ;
+    done
 
     # patch the geodesic shell profile scripts
     cp -r $geodesix/profile.d $out/etc
 
     # generate geodesic shell
     cat > $out/bin/geodesic <<EOF
-    #!/usr/bin/env bash
-    exec ${bash}/bin/bash --init-file $out/etc/profile $@
+    #!/bin/bash
+    export PATH=$out/bin:\$PATH
+    exec bash --init-file $out/etc/profile "\$@"
     EOF
     chmod +x $out/bin/geodesic
   '';

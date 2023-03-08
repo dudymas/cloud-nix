@@ -43,14 +43,14 @@ Once your Nix shell is up and running with direnv, you can enter the geodesix sh
 
 Just use the following command to enter the Nix shell:
 ```bash
-nix develop github:dudymas/cloud-nix#geodesix
+export GEODESIC_NAMESPACE=__your_namespace__
+nix run github:dudymas/cloud-nix#geodesix
 ```
 
-Since this method does not add any files or scripts, you'll need to manually enter
-the geodesix shell with:
+Since the `nix run` command will just directly send arguments to geodesix, you can
+also run one off commands like this:
 ```bash
-export GEODESIC_NAMESPACE=__your_namespace__
-geodesix
+nix run github:dudymas/cloud-nix#geodesix -- -c "atmos version"
 ```
 
 # Customizing
