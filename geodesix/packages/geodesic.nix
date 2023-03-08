@@ -17,6 +17,7 @@ stdenv.mkDerivation rec {
 
   atmos = import ./atmos.nix { inherit pkgs; };
   terraform = import ./terraform.nix { inherit pkgs; };
+  spacectl = import ./spacectl.nix { inherit pkgs; };
 
   pname = "geodesic";
   url = "github:cloudposse/geodesic?ref=${version}";
@@ -60,7 +61,7 @@ stdenv.mkDerivation rec {
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
-    for d in $aws $bash $atmos $terraform $direnv ;
+    for d in $aws $bash $atmos $terraform $direnv $spacectl;
       do cp -r $d/bin $out ;
     done
 
