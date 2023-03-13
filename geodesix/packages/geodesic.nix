@@ -14,6 +14,7 @@ stdenv.mkDerivation rec {
   bash = pkgs.bashInteractive;
   direnv = pkgs.direnv;
   aws = pkgs.awscli2;
+  yq = pkgs.yq-go;
 
   atmos = import ./atmos.nix { inherit pkgs; };
   terraform = import ./terraform.nix { inherit pkgs; };
@@ -61,7 +62,7 @@ stdenv.mkDerivation rec {
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
-    for d in $aws $bash $atmos $terraform $direnv $spacectl;
+    for d in $aws $bash $atmos $terraform $yq $direnv $spacectl;
       do cp -r $d/bin $out ;
     done
 
