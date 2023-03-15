@@ -3,6 +3,8 @@
 , version ? "1.8.0"
 , owner ? "cloudposse"
 , repo ? "geodesic"
+, geodesic_scripts_to_exclude ? [ "docker" ]
+, geodesic_base_dirs ? [ "rootfs" "os/${geodesic_distro}/rootfs" ]
 
 , lib
 , fetchurl
@@ -36,16 +38,19 @@ stdenv.mkDerivation rec {
 
   # Our source is right where the unzip happens, not in a "src/" directory (default)
   sourceRoot = ".";
-
+  
   installPhase = ''
     # init
-    mkdir -p $out/etc/profile.d
-    mkdir -p $out/usr/local/bin
     mkdir -p $out/bin
-
-    # copy geodesic source and deps
-    cp -r $src/rootfs/* $out
-    cp -r $src/os/${geodesic_distro}/rootfs/* $out
+    for base_dir in ${builtins.concatStringsSep " " geodesic_base_dirs }; do
+      pushd $src/$base_dir
+      find * -type d -exec mkdir -p $out/{} \;
+      find * -type f -exec cp {} $out/{} \;
+      for script in ${builtins.concatStringsSep " " geodesic_scripts_to_exclude}; do
+        find $out -type f -name $script -delete;
+      done
+      popd
+    done
 
     # clean up any unnecessary files
     rm $out/etc/profile.d/syslog-ng.sh

@@ -30,9 +30,7 @@
     in
     {
       devShells = {
-        default = pkgs.mkShell {
-          packages = with pkgs; [ jq yq-go ];
-        };
+        default = geodesix.shell;
         project-templates = import ./project-templates {
           inherit mach-nix pkgs system;
         };
