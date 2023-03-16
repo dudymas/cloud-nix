@@ -8,6 +8,7 @@ pkgs.mkShell {
     crudini
     kubectl
     terraform
+    glibcLocales
 
     geodesic
   ];

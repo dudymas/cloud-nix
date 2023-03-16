@@ -4,6 +4,7 @@
 , owner ? "cloudposse"
 , repo ? "geodesic"
 , geodesic_scripts_to_exclude ? [ "docker" ]
+, geodesic_busybox_tools ? [ "killall" "sed" "arch" ]
 , geodesic_base_dirs ? [ "rootfs" "os/${geodesic_distro}/rootfs" ]
 
 , lib
@@ -17,6 +18,10 @@ stdenv.mkDerivation rec {
   direnv = pkgs.direnv;
   aws = pkgs.awscli2;
   yq = pkgs.yq-go;
+  locale = pkgs.glibcLocales;
+  ncurses = pkgs.ncurses;
+  ssh = pkgs.openssh;
+  busybox = pkgs.busybox;
 
   atmos = import ./atmos.nix { inherit pkgs; };
   terraform = import ./terraform.nix { inherit pkgs; };
@@ -51,6 +56,7 @@ stdenv.mkDerivation rec {
       done
       popd
     done
+    touch $out/etc/os-release
 
     # clean up any unnecessary files
     rm $out/etc/profile.d/syslog-ng.sh
@@ -67,8 +73,11 @@ stdenv.mkDerivation rec {
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
-    for d in $aws $bash $atmos $terraform $yq $direnv $spacectl;
+    for d in $aws $bash $atmos $terraform $yq $locale $direnv $spacectl $ssh $ncurses;
       do cp -r $d/bin $out ;
+    done
+    for b in ${builtins.concatStringsSep " " geodesic_busybox_tools}; do
+      cp $busybox/bin/$b $out/bin/$b
     done
 
     # patch the geodesic shell profile scripts

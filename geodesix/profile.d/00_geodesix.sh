@@ -31,3 +31,14 @@ AWS_CONFIG_DIR=$GEODESIC_WORKDIR/rootfs/etc/aws-config
 if [[ -f ${AWS_CONFIG_DIR}/aws-config-saml ]]; then
   export AWS_CONFIG_FILE=${AWS_CONFIG_DIR}/aws-config-saml
 fi
+
+# Geodesic has a hard time if you don't have a place to put its ssh_agent_config
+if [ -z "${SSH_AUTH_SOCK}" ] || ! [ -e "${SSH_AUTH_SOCK}" ]; then
+    if [ -z "$SSH_AGENT_CONFIG" ] ; then
+        SSH_AGENT_CONFIG=$HOME/.ssh/agent_config
+        if ! [ -f "$SSH_AGENT_CONFIG" ] ; then
+            mkdir -p "$HOME/.ssh"
+            touch "$SSH_AGENT_CONFIG"
+        fi
+    fi
+fi
