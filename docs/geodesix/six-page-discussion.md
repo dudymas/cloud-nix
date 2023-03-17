@@ -351,15 +351,14 @@ we're telling that bash to execute the command `poetry --version` and then exit.
 # A Word
 
 This is a lot. I am going to stop the discussion here for the sake of time.
-I can only imagine at this point you have tons of questions. There's more below
-but I have only kept the outline on most of it.
+I can only imagine at this point you have tons of questions.
 
-
+<!--
 ## Flake structure - the inputs
 
 
-## What's a Package/Derivation?
 ## What are Overlays?
+
 ## So why make shells and apps?
 
 # Using geodesix
@@ -401,3 +400,5 @@ but I have only kept the outline on most of it.
 ## Camlistore/Perkeep
 
 ## Warpforge
+
+-->
