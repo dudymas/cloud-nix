@@ -140,13 +140,71 @@ We want to be sure that our infrastructure can be maintained for years to come. 
 don't want to worry about the environment we're building in. So why give this up? This
 all sounds like I should have started -with- Docker and added Nix.
 
-## The Nix Store
+## The Nix Store and Profiles
 
+Nix has been likened to tools like Ansible and SaltStack. The way it behaves, you
+describe a set of packages (called derivations) and how they should be installed.
+Let's summarize some of the effects of the functional, declarative nature of Nix:
+
+- All packages in Nix are immutable. This means that you can't change the contents of
+  a package after it's been built, which safeguards you from drift.
+- Any given release is stored by a hash of its contents. That is, the path to a
+  given binary/package will never change in Nix.
+- Binaries in Nix are expected to only point to their dependencies and never break
+  out of their store. So if a package uses glibc, the binaries will be linked to
+  the hashed store paths of the precise version of glibc they were built with.
+- Flakes are a feature of Nix that let you configure a set of code repositories
+  as inputs. They effectively guarantee that version control reigns supreme on a
+  package and express several outputs that demonstrate was a Flake repository supports.
 
 ## Is it practical?
-flakes
-extending
-common workflows
+
+Let's compare Docker to our Nix solution. I'll discuss the points above as they come
+up while we do a few things in geodesix.
+
+Let's assume you've just installed Nix. To run with Flake, you'll need to enable it
+like so:
+```bash
+mkdir -p ~/.config/nix
+echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+```
+
+We'll discuss later why these are set in `experimental-features`. For now, suffice to
+say that many stable facets of Nix are labeled 'experimental' because they set
+opinions in motion. We'll be using Flakes from here on out, and many consider them
+just a 'notion' of how to wield the Nix store.
+
+Okay, Flakes are turned on. Now let's run the `geodesix` app:
+```bash
+nix run github:dudymas/cloud-nix#geodesix
+```
+
+That's it. If you just wanted geodesix, you should be greeted with a prompt. You
+can run things like `atmos version` or, if you're in a repo that has an `atmos.yaml`,
+why not try `atmos describe stack 
+
+So what happened? This will download the `geodesix` derivation and run it. You'll notice
+that I haven't mentioned much about environment. Similar to Docker, Nix's store will
+manage looking up that GitHub repo, grabbing the latest copy, evaluating its dependencies,
+and building it. Once the Flake app is built, it's put in the Nix store and all that Nix
+has to do is execute it.
+
+If you run the command again, it'll be nearly instant, similar to how quickly Docker will
+run a container. For Docker, this comes from having a filesystem that can layer changes.
+When you start a Docker container over again, Docker has little to no effort. When you
+run inside a Container, the filesystem is a union of the layers that make up the image.
+Any updates or changes that you make are cleanly removed and new containers will start
+fresh. This gives rise to consistency.
+
+Nix, however, doesn't need a layered filesystem. It has a content addressable store, and
+the content never changes. For Nix, it just checks to see what the last commit was on
+our Flake repo. If there's a store path for that commit, then it just runs. There's no
+fear that anything has changed. It's all read-only.
+
+In a way, this experience is similar to Docker. You don't have to worry about the environment.
+But there are some interesting differences. With Docker, you have a list of images that
+you have pulled tha represent a set of compressed layers. With Nix, you have a list of
+generations that represent sets of immutable packages.
 
 ## How much effort is it?
 - Learning enough of Nix to be effective
@@ -155,10 +213,154 @@ common workflows
 
 # Overview of geodesix derivation
 
-## Flake structure
-- What are the packages?
-- Overlays?
-- Shells vs. Apps
+## Flake structure - the outputs
+
+I mentioned before that Flakes have several outputs. Let's try listing out what
+the `cloud-nix` Flake has:
+```bash
+nix flake show github:dudymas/cloud-nix
+
+github:dudymas/cloud-nix/aba59d684ba49e24762bb3a9510eb1ee3eae86a9
+├───apps
+│   ├───aarch64-darwin
+│   │   ├───default: app
+│   │   └───geodesix: app
+│   ├───aarch64-linux
+│   │   ├───default: app
+│   │   └───geodesix: app
+│   ├───x86_64-darwin
+│   │   ├───default: app
+│   │   └───geodesix: app
+│   └───x86_64-linux
+│       ├───default: app
+│       └───geodesix: app
+├───devShells
+│   ├───aarch64-darwin
+│   │   ├───default: development environment 'nix-shell'
+│   │   ├───geodesix: development environment 'nix-shell'
+│   │   └───project-templates: development environment 'nix-shell'
+│   ├───aarch64-linux
+│   │   ├───default: development environment 'nix-shell'
+│   │   ├───geodesix: development environment 'nix-shell'
+│   │   └───project-templates: development environment 'nix-shell'
+│   ├───x86_64-darwin
+│   │   ├───default: development environment 'nix-shell'
+│   │   ├───geodesix: development environment 'nix-shell'
+│   │   └───project-templates: development environment 'nix-shell'
+│   └───x86_64-linux
+│       ├───default: development environment 'nix-shell'
+│       ├───geodesix: development environment 'nix-shell'
+│       └───project-templates: development environment 'nix-shell'
+└───templates
+    ├───default: template: Geodesix template for adding nix to your infra repo
+    └───geodesix: template: Geodesix template for adding nix to your infra repo
+```
+
+This lists three outputs: `apps`, `devShells`, and `templates`. Let's look at each:
+
+- Apps
+  - These are the derivations that are built and put in the Nix store. They are
+    the things that you can run with `nix run`.
+- DevShells
+  - These are build environments you can use to kick the tires on new changes. They are
+    the things that you can run with `nix develop`.
+- Templates
+  - These are the things that you can use to add static boilerplate. They are the things
+  that you can run with `nix flake init`.
+
+The design of Flakes is to allow you to have a single repo that can be used in many
+common tasks of development: building, testing, and deploying. Let's say you wanted to
+add a binary to geodesix.
+
+First, you might want to just build the app with Nix and see how it plays within a
+shared environment. That's what the `devShells` are for. You can run `nix develop` and
+it will run a shell that doesn't mess with geodesix, but the shell itself can be manipulated
+to include the new binary in its PATH. You do this in cloud-nix by first getting a name
+of the known package:
+```bash
+nix-env -qaP '.*poetry'
+
+nixpkgs.emacsPackages.poetry      emacs-poetry-20220915.801
+nixpkgs.python310Packages.poetry  python3.10-poetry-1.2.2
+nixpkgs.poetry                    python3.10-poetry-1.3.0
+nixpkgs.python39Packages.poetry   python3.9-poetry-1.2.2
+```
+
+The output of this command should the package name on the left (which we'll want for code)
+and the full derivation name on the right (which helps you know what versions you'll use).
+
+Then, you can add it to the `devShells.geodesix` derivation:
+```nix
+  devShells.poetryShell = pkgs.mkShell {
+    packages = [
+      pkgs.poetry # becomes python3.10-poetry-1.3.0
+      pkgs.geodesix
+    ];
+  };
+```
+
+Now, you can run `nix develop` and you'll have a shell that has the `poetry` binary.
+Once you're satisfied with this, you can then update the derivation in
+[packages](../../geodesix/packages/geodesic.nix). Let's go over how a derivation works
+in Nix while we do it:
+
+- `mkDerivation` is the function that creates a derivation. It takes a set of
+  attributes that define what it takes to make an application.
+- Derivations have a set of phases. Each phase moves a build along. The default phases
+  assume a more traditional build process. This includes running git to fetch sources,
+  running a configure script, and then running a makefile.
+- All phases are just default attributes you can override. To change the install phase,
+  you can just override the `installPhase` attribute.
+- Attributes inside the derivation are available to all phases. So if you set a `hello`
+  attribute, you can use it in the `installPhase` as `$hello`. They're just bash variables.
+- Derivations resolve to their store path, which is just the hash of the derivation.
+  So if you set an attribute `bash` to be the bashInteractive package, the var `$bash`
+  is just the path to the bashInteractive package in the Nix store.
+- mkDerivation will provide several helpers which let you rewrite binaries to only use
+  dependencies from the derivation. If you aren't sure which ones to use, just enter
+  the `nix develop` shell to try them out and test your changes on a build.
+
+So armed with these points about derivations, let's update the derivation to include
+the `poetry` binary. We'll start by adding the `poetry` binary to the derivation:
+```nix
+  bash = pkgs.bashInteractive;
+  poetry = pkgs.poetry;
+```
+
+Then, we'll add the `poetry` binary to the derivation's bin directory:
+```bash
+cp $poetry/bin/poetry $out/bin/poetry
+```
+
+Remember, the poetry binary will be set to only point to its store path. Copying it
+will effectively link our derivation to that one, and it will only ever point to the
+-exact- version of poetry we built with. It won't change because now the hash of our
+geodesix will include those store paths.
+
+Now we can test if poetry is available by running `nix run`:
+```bash
+nix run . -- -c "poetry --version"
+```
+
+The geodesix app is a bash script that just sources a profile and adds the geodesix
+bin directory to the PATH. By adding `-c "poetry --version"` to the end of the command,
+we're telling that bash to execute the command `poetry --version` and then exit.
+
+---
+
+# A Word
+
+This is a lot. I am going to stop the discussion here for the sake of time.
+I can only imagine at this point you have tons of questions. There's more below
+but I have only kept the outline on most of it.
+
+
+## Flake structure - the inputs
+
+
+## What's a Package/Derivation?
+## What are Overlays?
+## So why make shells and apps?
 
 # Using geodesix
 
@@ -186,9 +388,16 @@ common workflows
 - A dependence on systemd
 
 ## Will I keep using it?
+- What has worked great
+- What has been a pain
 
 ## Would I recommend it?
+- Using the basics
+- Extending
+- Supporting
 
-# Related effort and artifacts
+# Related effort
+
 ## Camlistore/Perkeep
+
 ## Warpforge
