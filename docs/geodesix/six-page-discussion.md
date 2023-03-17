@@ -73,7 +73,7 @@ beyond.
 
 ## Geodesic
 
-Let's finish off with the Geodesic introduction docs:
+Let's continue with the Geodesic introduction docs:
 >Geodesic is the fastest way to get up and running with a rock solid, production grade cloud platform built entirely from Open Source technologies.
 
 >It’s a swiss army knife for creating and building consistent platforms to be shared across a team environment.
