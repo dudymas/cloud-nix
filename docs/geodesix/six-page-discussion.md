@@ -206,11 +206,6 @@ But there are some interesting differences. With Docker, you have a list of imag
 you have pulled tha represent a set of compressed layers. With Nix, you have a list of
 generations that represent sets of immutable packages.
 
-## How much effort is it?
-- Learning enough of Nix to be effective
-- Understanding enough of Nickel to extend
-- Taking enough of Geodesic to keep things consistent
-
 # Overview of geodesix derivation
 
 ## Flake structure - the outputs
@@ -389,6 +384,11 @@ I can only imagine at this point you have tons of questions.
 ## Will I keep using it?
 - What has worked great
 - What has been a pain
+
+## How much effort is it?
+- Learning enough of Nix to be effective
+- Understanding enough of Nickel to extend
+- Taking enough of Geodesic to keep things consistent
 
 ## Would I recommend it?
 - Using the basics
