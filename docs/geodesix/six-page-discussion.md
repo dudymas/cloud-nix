@@ -181,7 +181,7 @@ nix run github:dudymas/cloud-nix#geodesix
 
 That's it. If you just wanted geodesix, you should be greeted with a prompt. You
 can run things like `atmos version` or, if you're in a repo that has an `atmos.yaml`,
-why not try `atmos describe stack 
+why not try `atmos describe stack`
 
 So what happened? This will download the `geodesix` derivation and run it. You'll notice
 that I haven't mentioned much about environment. Similar to Docker, Nix's store will
