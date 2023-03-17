@@ -84,28 +84,64 @@ Let's finish off with the Geodesic introduction docs:
 
 >It provides a fully customizable framework for defining and building cloud infrastructures backed by AWS and powered by kubernetes. It couples best-of-breed technologies with engineering best-practices to equip organizations with the tooling that enables clusters to be spun up in record time without compromising security.
 
-# Why nixify geodesic?
+## Docker
+
+Right now, the quickest way to get started with Geodesic is to use Docker. It makes sense
+to briefly include what Docker's official website says about it an overview:
+
+>Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.
+
+## Where does that place this repo?
+
+The `cloud-nix` repo and `geodesix` are one way you might combine the technologies above
+to best share their strengths and focus on the heart of what makes development
+lower effort and more intuitive. While the solution I've picked doesn't apply Docker,
+local tests showed that it works there too, but I'll discuss why Docker/containerization
+may not be necessary.
+
+The remainder of this document will be about how I've leveraged Nix as a hub to deliver
+the environment of geodesic.
+
+# Why "nixify" Geodesic?
+
+Of the four technologies above, this repo only combines three for now:
 
 Geodesic, a toolkit and a repeatable environment.
 Nickel, a functional language for configuration.
 Nix, a package manager built on content addressable storage.
 
-You might already guess why I felt nix would be a nice way to improve geodesic.
+You might already guess how these compliment each other.
 
-## What has vanilla Geodesic struggled with?
+## To Docker or not to Docker
 
-In the end, we want to continue to make software that excels in its purpose,
-while standing on software that was intended to support it.
+The elephant in the room is not including the Docker layer that honestly could be included.
+Let's dig into that decision first. First some points to get out of the way:
 
-To that end, Geodesic has been great for its purpose. But I would like to reflect
-on how the software that supports it has created some challenges.
+- Docker at its core focuses on a feature of Linux, "Containers". Windows and MacOS
+  have features that approach the same functionality as containers, but either are not
+  open source or are not as full featured. This means Docker relies on virtualization
+  in non-Linux environments.
+- MacOS is a common development environment. More often (and for the rest of this document)
+  I'll refer to MacOS as `darwin`. The darwin development environment has shifted to a
+  ARM architecture, which can complicate building environments for it.
+- Windows has WSL, which provides a lot of the functionality of the Linux kernel to ELF
+  binaries. This means that you can run Linux binaries on Windows, but the syscalls are
+  ultimately just providing Windows primitives. So things like dbus and inotify (common
+  facets of Linux) are problematic to rely on while developing on Windows.
 
-- Docker at its core focuses on a feature of linux kernels. Neither Windows nor MacOS
-  directly support Docker because they simply don't run the Linux host operating system.
-- MacOS
-- Windows
-- Git
-- VPCs and CI/CD
+Docker hasn't been a bad solution considering we've come from a world of Vagrant, Virtualbox,
+and ssh. Those tools are still relevant, but Docker has made them much less common.
+
+Why?
+
+Containers give you consistency and portability. And with those, you have less fuss over
+how to get code building consistently. This is where Geodesic leans heaviest on Docker.
+We want to be sure that our infrastructure can be maintained for years to come. And we
+don't want to worry about the environment we're building in. So why give this up? This
+all sounds like I should have started -with- Docker and added Nix.
+
+## The Nix Store
+
 
 ## Is it practical?
 flakes
