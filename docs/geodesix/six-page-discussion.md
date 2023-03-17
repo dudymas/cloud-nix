@@ -281,7 +281,7 @@ nixpkgs.poetry                    python3.10-poetry-1.3.0
 nixpkgs.python39Packages.poetry   python3.9-poetry-1.2.2
 ```
 
-The output of this command should the package name on the left (which we'll want for code)
+The output of this command shows the package name on the left (which we'll want for code)
 and the full derivation name on the right (which helps you know what versions you'll use).
 
 Then, you can add it to the `devShells.geodesix` derivation:
