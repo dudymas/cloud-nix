@@ -309,9 +309,9 @@ in Nix while we do it:
 - Attributes inside the derivation are available to all phases. So if you set a `hello`
   attribute, you can use it in the `installPhase` as `$hello`. They're just bash variables.
 - Derivations resolve to their store path, which is just the hash of the derivation.
-  So if you set an attribute `bash` to be the bashInteractive package, the var `$bash`
-  is just the path to the bashInteractive package in the Nix store.
-- mkDerivation will provide several helpers which let you rewrite binaries to only use
+  So if you set an attribute `bash` to be the `bashInteractive` package, the var `$bash`
+  is just the path to the `bashInteractive` package in the Nix store.
+- `mkDerivation` will provide several helpers which let you rewrite binaries to only use
   dependencies from the derivation. If you aren't sure which ones to use, just enter
   the `nix develop` shell to try them out and test your changes on a build.
 
