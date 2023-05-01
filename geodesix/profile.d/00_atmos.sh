@@ -16,7 +16,7 @@ function atmos-describe-stack-component(){
 function atmos-get-stack-component-var(){
     local usage component varname kind;
     usage='
-    Usage: atmos-get-stack-component-var <component> <stack> <varname> [kind: defaults to "terraform"]
+    Usage: atmos-get-stack-component-var <component> <varname> [kind: defaults to "terraform"]
 
     This function will return the value of the specified variable in the specified component of any stack
     that atmos can associate with it.
@@ -48,4 +48,19 @@ function atmos-list-component-directories(){
     # shellcheck disable=SC2035
     find * -type d | grep "$component_pattern" | paste -sd ","
     popd || return 1 > /dev/null
+}
+
+function atmos-describe-component(){
+    local usage component stack filter;
+    usage='
+    Usage: atmos-describe-component <component> [stack: defaults to ""] [filter: defaults to "."]
+
+    This function will return the description of the specified component of any stack
+    that atmos can associate with it.
+    '
+    component=${1?"$usage"}
+    stack=${2:-}
+    filter=${3:-.}
+
+    atmos-describe-stack-component "$component" --sections=none
 }

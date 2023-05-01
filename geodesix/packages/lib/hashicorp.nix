@@ -5,13 +5,11 @@
 , version
 , sha256
 , system ? builtins.currentSystem
-, pname ? "${name}-bin"
+, pname ? name
 
 , lib
-, stdenv
-, fetchurl
-, unzip
-, autoPatchelfHook
+, pkgs ? import <nixpkgs> {}
+, callPackage ? pkgs.callPackage
 }:
 
 let
@@ -30,23 +28,10 @@ let
 
   # url for downloading composed of all the other stuff we built up.
   url = "https://releases.hashicorp.com/${name}/${version}/${name}_${version}_${goSystem}.zip";
-in stdenv.mkDerivation {
-  inherit pname version;
-  src = fetchurl { inherit url sha256; };
-
-  # Our source is right where the unzip happens, not in a "src/" directory (default)
-  sourceRoot = ".";
 
   # Stripping breaks darwin Go binaries
   dontStrip = lib.strings.hasPrefix "darwin" goSystem;
 
-  nativeBuildInputs = [ unzip ] ++ (if stdenv.isLinux then [
-    # On Linux we need to do this so executables work
-    autoPatchelfHook
-  ] else []);
-
-  installPhase = ''
-    mkdir -p $out/bin
-    mv ${name} $out/bin
-  '';
+in callPackage ./dl-bin.nix {
+  inherit pname version sha256 url dontStrip;
 }

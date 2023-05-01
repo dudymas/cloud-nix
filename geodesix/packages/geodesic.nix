@@ -14,13 +14,19 @@
 }:
 stdenv.mkDerivation rec {
   bash = pkgs.bashInteractive;
+  compdef = pkgs."bash-completion";
   direnv = pkgs.direnv;
   aws = pkgs.awscli2;
   yq = pkgs.yq-go;
+  jq = pkgs.jq;
+  tmux = pkgs.tmux;
 
   atmos = import ./atmos.nix { inherit pkgs; };
   terraform = import ./terraform.nix { inherit pkgs; };
   spacectl = import ./spacectl.nix { inherit pkgs; };
+  kubectx = import ./k8s/kubectx.nix { inherit pkgs; };
+  kubens = import ./k8s/kubens.nix { inherit pkgs; };
+  helm = import ./k8s/helm.nix { inherit pkgs; };
 
   pname = "geodesic";
   url = "github:cloudposse/geodesic?ref=${version}";
@@ -67,8 +73,11 @@ stdenv.mkDerivation rec {
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
-    for d in $aws $bash $atmos $terraform $yq $direnv $spacectl;
-      do cp -r $d/bin $out ;
+    for d in $aws $bash $atmos $terraform $yq $direnv $spacectl $tmux $kubectx $kubens $helm $jq; do
+      find $d/bin -type f -exec ln -s {} $out \;
+      pushd $d
+        find bin/* -type f -exec ln -s $d/{} $out/{} \;
+      popd
     done
 
     # patch the geodesic shell profile scripts

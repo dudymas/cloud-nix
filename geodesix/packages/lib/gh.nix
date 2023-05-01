@@ -7,7 +7,7 @@
 , version
 , version_path ? "v${version}"
 , extension ? ""
-, sha256
+, sha256 ? null
 , system ? builtins.currentSystem
 , pname ? "${name}-bin"
 
@@ -37,6 +37,7 @@ let
 in
 stdenv.mkDerivation {
   inherit pname version;
+  sha256 = if sha256 == null then builtins.fetchurlHash url else sha256;
   src = fetchurl { inherit url sha256; };
 
   # Our source is right where the unzip happens, not in a "src/" directory (default)
