@@ -20,6 +20,7 @@ stdenv.mkDerivation rec {
   yq = pkgs.yq-go;
   jq = pkgs.jq;
   tmux = pkgs.tmux;
+  chamber = pkgs.chamber;
 
   atmos = import ./atmos.nix { inherit pkgs; };
   terraform = import ./terraform.nix { inherit pkgs; };
@@ -73,7 +74,7 @@ stdenv.mkDerivation rec {
     for b in $( find $out/usr/local/bin -type f ); do
       ln -s $b $out/bin/$( basename $b )
     done
-    for d in $aws $bash $atmos $terraform $yq $direnv $spacectl $tmux $kubectx $kubens $helm $jq; do
+    for d in $aws $bash $atmos $terraform $yq $direnv $spacectl $tmux $kubectx $kubens $helm $dhall $chamber $jq; do
       find $d/bin -type f -exec ln -s {} $out \;
       pushd $d
         find bin/* -type f -exec ln -s $d/{} $out/{} \;

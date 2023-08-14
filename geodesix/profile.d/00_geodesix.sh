@@ -30,14 +30,13 @@ export AWS_PROFILE=${AWS_PROFILE:-${GEODESIC_NAMESPACE}-core-gbl-identity}
 AWS_CONFIG_DIR=$GEODESIC_WORKDIR/rootfs/etc/aws-config
 PATH=$GEODESIC_WORKDIR/rootfs/usr/local/bin:$PATH
 
-# Test if rootfs has aws-config-saml and update AWS_CONFIG_FILE if so
-if [[ -f ${AWS_CONFIG_DIR}/aws-config-saml ]]; then
-  export AWS_CONFIG_FILE=${AWS_CONFIG_DIR}/aws-config-saml
-fi
-# Newer configs will use the local config, so we let that override the saml config
-if [[ -f ${AWS_CONFIG_DIR}/aws-config-local ]]; then
-  export AWS_CONFIG_FILE=${AWS_CONFIG_DIR}/aws-config-local
-fi
+# We should just loop over saml, local, and teams to look for AWS_CONFIG_FILE
+for config in saml local teams; do
+  if [[ -f ${AWS_CONFIG_DIR}/aws-config-${config} ]]; then
+    export AWS_CONFIG_FILE=${AWS_CONFIG_DIR}/aws-config-${config}
+    break
+  fi
+done
 
 # Set the KUBECONFIG environment variable to the modified Kubernetes configuration file
 export KUBECONFIG_DIR=${KUBECONFIG_DIR:-$GEODESIC_CONFIG_HOME/kubectl}
@@ -48,3 +47,6 @@ mkdir -p "$(dirname "$KUBECONFIG")"
 # Move our HISTFILE to be in the .config directory
 export HISTFILE=$GEODESIC_CONFIG_HOME/history/${GEODESIC_NAMESPACE}.history
 mkdir -p "$(dirname "$HISTFILE")"
+
+# Chamber defaults
+export CHAMBER_KMS_KEY_ALIAS=alias/aws/ssm
