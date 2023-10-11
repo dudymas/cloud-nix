@@ -5,6 +5,6 @@ callPackage (import ./lib/gh.nix) {
   name = "atmos";
   repo = "atmos";
   owner = "cloudposse";
-  version = "1.43.0";
-  sha256 = "sha256-3V8t3KFQkrDbMlZutPRfXH8zPV1Y74+n1BdMGF4rJKU=";
+  version = "1.45.3";
+  sha256 = "sha256-58Jrx5NfX6TFSwp/qh5riMR+FpuNH8KZu4somJdWYB4=";
 }

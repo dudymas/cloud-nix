@@ -5,4 +5,5 @@ super: {
   terraform = import ../packages/terraform.nix { pkgs = super; };
   spacectl = import ../packages/spacectl.nix { pkgs = super; };
   geodesic = super.callPackage (import ../packages/geodesic.nix) { pkgs = super; };
+  updatecli = import ../packages/updatecli.nix { pkgs = super; };
 }

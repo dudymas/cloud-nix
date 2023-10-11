@@ -9,6 +9,7 @@ pkgs.mkShell {
     crudini
     kubectl
     terraform
+    updatecli
 
     geodesic
   ];
