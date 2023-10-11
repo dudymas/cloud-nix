@@ -2,7 +2,7 @@
 , pkgs ? import <nixpkgs> {}
 , pname ? "updatecli"
 , owner ? pname
-, repo ? repo
+, repo ? pname
 , extension ? ".tar.gz"
 , version ? "0.62.0"
 , version_sha ? "sha256-4esu0eBTMpI+4JyPcrvDg749nTmehLle1DhSPcP7uBo="

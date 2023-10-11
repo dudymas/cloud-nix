@@ -22,16 +22,22 @@ let
     aarch64-linux = "linux_arm64";
     aarch64-darwin = "darwin_arm64";
   };
+  
+  checksum_filename = "${name}_${version}_SHA256SUMS";
+  checksum_url = "https://releases.hashicorp.com/${name}/${version}/${checksum_filename}";
+  checksum_file = pkgs.fetchurl { inherit sha256; url = checksum_url; };
+  checksums = import ./checksum-map.nix { inherit checksum_file; };
 
   # Get our system
   goSystem = systemMap.${system} or (throw "unsupported system: ${system}");
+  filename = "${name}_${version}_${goSystem}.zip";
 
   # url for downloading composed of all the other stuff we built up.
-  url = "https://releases.hashicorp.com/${name}/${version}/${name}_${version}_${goSystem}.zip";
+  url = "https://releases.hashicorp.com/${name}/${version}/${filename}";
 
   # Stripping breaks darwin Go binaries
   dontStrip = lib.strings.hasPrefix "darwin" goSystem;
 
 in callPackage ./dl-bin.nix {
-  inherit pname version sha256 url dontStrip;
+  inherit pname version url dontStrip; sha256 = checksums."${filename}";
 }

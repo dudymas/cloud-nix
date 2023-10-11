@@ -4,5 +4,5 @@
 callPackage (import ./lib/hashicorp.nix) {
   name = "terraform";
   version = "1.5.5";
-  sha256 = "sha256-x/3t20c5/dW62p1F/XhuLLr26eNkaT7uRcg+lSgdrTo=";
+  sha256 = "sha256-OzCZZNdu5ZIh3Jmh+7NHdeygI6JHz1r3KyE/jq0LL88=";
 }
