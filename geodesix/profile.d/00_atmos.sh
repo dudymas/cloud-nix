@@ -64,3 +64,47 @@ function atmos-describe-component(){
 
     atmos-describe-stack-component "$component" --sections=none
 }
+
+function atmos-add-component(){
+  local usage component version type
+  usage='
+  Usage: atmos-add-component <component> <version> [terraform|helmfile]
+
+  Adds a component to your repo and vendors it.
+  '
+  component=${1?"$usage"}
+  version=${2?"$usage"}
+  local type=${3:-terraform}
+  local component_path=$(atmos describe config | yq '.base_path + "/" + '".components.${type}.base_path" )
+
+  mkdir -p ${component_path}/${component}
+  cat > ${component_path}/${component}/component.yaml <<EOF
+# '${component}' component vendoring config
+
+# 'component.yaml' in the component folder is processed by the 'atmos' commands
+# 'atmos vendor pull -c ${component}' or 'atmos vendor pull --component ${component}'
+
+apiVersion: atmos/v1
+kind: ComponentVendorConfig
+spec:
+  source:
+    # 'uri' supports all protocols (local files, Git, Mercurial, HTTP, HTTPS, Amazon S3, Google GCP),
+    # and all URL and archive formats as described in https://github.com/hashicorp/go-getter
+    # In 'uri', Golang templates are supported  https://pkg.go.dev/text/template
+    # If 'version' is provided, {{ .Version }} will be replaced with the 'version' value before pulling the files from 'uri'
+    uri: github.com/cloudposse/terraform-aws-components.git//modules/${component}?ref={{ .Version }}
+    version: ${version}
+    # Only include the files that match the 'included_paths' patterns
+    # If 'included_paths' is not specified, all files will be matched except those that match the patterns from 'excluded_paths'
+    # 'included_paths' support POSIX-style Globs for file names/paths (double-star `**` is supported)
+    # https://en.wikipedia.org/wiki/Glob_(programming)
+    # https://github.com/bmatcuk/doublestar#patterns
+    included_paths:
+      - "**/**"
+    # Exclude the files that match any of the 'excluded_paths' patterns
+    # Note that we are excluding 'context.tf' since a newer version of it will be downloaded using 'mixins'
+    # 'excluded_paths' support POSIX-style Globs for file names/paths (double-star `**` is supported)
+    excluded_paths: []
+EOF
+  atmos vendor pull -c ${component}
+}
