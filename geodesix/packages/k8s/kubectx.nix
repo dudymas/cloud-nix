@@ -1,12 +1,13 @@
-{ callPackage ? pkgs.callPackage
-, pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {}
+, name ? "kubectx"
+, repo ? "kubectx"
+, owner ? "ahmetb"
+, version ? "v0.9.4"
+, version_path ? "v0.9.4"
+, extension ? ".tar.gz"
+, sha256 ? "sha256-/xZt1YVs7Xb2M3InxMYhHr/rqg/At4EsTtDYExZpUgo="
+}:
 
-callPackage (import ../lib/gh.nix) {
-  name = "kubectx";
-  repo = "kubectx";
-  owner = "ahmetb";
-  version = "v0.9.4";
-  version_path = "v0.9.4";
-  extension = ".tar.gz";
-  sha256 = "sha256-et6vBXgJ73VrbykMLgVX6GwdBHGCORZqnvApjbb+Wyc=";
+pkgs.callPackage (import ../lib/gh.nix) {
+  inherit name repo owner version version_path extension sha256;
 }

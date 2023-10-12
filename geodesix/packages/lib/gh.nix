@@ -10,7 +10,17 @@
 , sha256 ? null
 , system ? builtins.currentSystem
 , pname ? "${name}-bin"
+, checksum_file ? "checksums.txt"
 , filename ? ""
+, fileNamer ? conf: "${conf.name}_${conf.version}_${conf.system_mapping}${conf.extension}"
+, systemMap ? {
+    x86_64-linux = "linux_amd64";
+    i686-linux = "linux_386";
+    x86_64-darwin = "darwin_amd64";
+    i686-darwin = "darwin_386";
+    aarch64-linux = "linux_arm64";
+    aarch64-darwin = "darwin_arm64";
+  }
 
 , lib
 , stdenv
@@ -21,33 +31,31 @@
 
 let
   # Mapping of Nix systems to the GOOS/GOARCH pairs.
-  systemMap = {
-    x86_64-linux = "linux_amd64";
-    i686-linux = "linux_386";
-    x86_64-darwin = "darwin_amd64";
-    i686-darwin = "darwin_386";
-    aarch64-linux = "linux_arm64";
-    aarch64-darwin = "darwin_arm64";
+  checksums = import ./gh-checksums.nix {
+    inherit repo owner version version_path sha256 fetchurl;
+    filename = checksum_file;
   };
 
   # Get our system
-  goSystem = systemMap.${system} or (throw "unsupported system: ${system}");
-  default_filename = "${name}_${version}_${goSystem}${extension}";
+  system_mapping = systemMap.${system} or (throw "unsupported system: ${system}");
+  default_filename = fileNamer { inherit name pname owner repo version version_path system system_mapping extension; };
   url_filename = if filename == "" then default_filename else filename;
+  checksum_attrs = builtins.concatStringsSep " " (builtins.attrNames checksums);
+  checksum_lookup = checksums."${url_filename}" or (throw "no checksum found for ${url_filename}. Pick from [${checksum_attrs}]");
 
   # url for downloading composed of all the other stuff we built up.
   url = "https://github.com/${owner}/${repo}/releases/download/${version_path}/${url_filename}";
+  release_sha256 = if checksum_file == "" then sha256 else checksum_lookup;
 in
 stdenv.mkDerivation {
   inherit pname version;
-  sha256 = if sha256 == null then builtins.fetchurlHash url else sha256;
-  src = fetchurl { inherit url sha256; };
+  src = fetchurl { inherit url; sha256 = release_sha256; };
 
   # Our source is right where the unzip happens, not in a "src/" directory (default)
   sourceRoot = ".";
 
   # Stripping breaks darwin Go binaries
-  dontStrip = lib.strings.hasPrefix "darwin" goSystem;
+  dontStrip = lib.strings.hasPrefix "darwin" system_mapping;
 
   nativeBuildInputs = [ unzip ] ++ (if stdenv.isLinux then [
     # On Linux we need to do this so executables work
