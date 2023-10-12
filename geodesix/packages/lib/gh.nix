@@ -1,5 +1,8 @@
 /* This function creates a derivation for installing binaries directly
-  * from releases.hashicorp.com.
+  * from GitHub. It does this by taking a checksum and version spec for the
+  * release which corresponds to the 'checksums.txt' for the build.
+  * We do this to be lazy about problematic builds, but still maintain
+  * cross-platform support.
 */
 { name
 , repo
