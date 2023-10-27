@@ -10,6 +10,7 @@ pkgs.mkShell {
     kubectl
     terraform
     updatecli
+    termsvg
 
     geodesic
   ];

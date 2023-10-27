@@ -73,6 +73,6 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    mv ${name} $out/bin
+    find . -name ${name} -exec mv {} $out/bin \;
   '';
 }
