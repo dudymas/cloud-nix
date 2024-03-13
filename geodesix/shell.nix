@@ -4,6 +4,7 @@
 pkgs.mkShell {
   packages = with pkgs; [
     atmos
+    adr
     awscli
     bash-completion
     crudini
