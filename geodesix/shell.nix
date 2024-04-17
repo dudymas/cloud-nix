@@ -5,7 +5,7 @@ pkgs.mkShell {
   packages = with pkgs; [
     atmos
     adr
-    awscli
+    awscli2
     bash-completion
     crudini
     kubectl
@@ -19,8 +19,6 @@ pkgs.mkShell {
   bash = pkgs.bashInteractive;
   geodesic = pkgs.geodesic;
   
-  aloha = "hello";
-
   shellHook = ''
     export GEODESIC_SHELL='$bash/bin/bash --init-file $geodesic/etc/profile'
     alias geodesix=$GEODESIC_SHELL

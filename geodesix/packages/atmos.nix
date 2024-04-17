@@ -2,8 +2,8 @@
 , name ? "atmos"
 , owner ? "cloudposse"
 , repo ? name
-, version ? "1.65.0"
-, sha256 ? "sha256-i1QA6mjRK6+xjthmb++ChiIPwSZ79zroDBYlfaX0PG0="
+, version ? "1.70.0"
+, sha256 ? "sha256-ZZKbN63P83e9jcDY8E0S9ZH3BS9EFCmEntaMtwivqvU="
 }:
 
 pkgs.callPackage (import ./lib/gh.nix) {
