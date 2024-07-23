@@ -34,6 +34,7 @@
         project-templates = import ./project-templates {
           inherit mach-nix pkgs system;
         };
+        aider = import ./aider { inherit pkgs system; };
         geodesix = geodesix.shell;
       };
 
